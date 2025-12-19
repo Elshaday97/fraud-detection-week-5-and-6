@@ -4,13 +4,26 @@ from scripts.constants import (
     Fraud_Data_Columns,
     FRAUD_DATA_NUMERIC_COLS,
     FRAUD_DATA_DATE_COLS,
+    RAW_CREDIT_IP_TO_COUNTRY_FILE_NAME,
+    IP_To_Country_Columns,
 )
+from .loader import DataLoader
+import numpy as np
 
 
 class DataPreProcessor:
-    def __init__(self, df: pd.DataFrame):
+    def __init__(self, df: pd.DataFrame, init_ip=False):
         self.raw_df = df
         self.cleaned_df = df
+        if init_ip:
+            self.ip_to_country_df = (
+                DataLoader()
+                .load_csv(file_name=RAW_CREDIT_IP_TO_COUNTRY_FILE_NAME)
+                .sort_values("lower_bound_ip_address")
+                .reset_index(drop=True)
+            )
+        else:
+            self.ip_to_country_df = None
 
     @handle_errors
     def _handle_duplicates(self, df: pd.DataFrame):
@@ -82,11 +95,73 @@ class DataPreProcessor:
 
         return working_df
 
+    def _map_ip_address(self, df: pd.DataFrame):
+        if self.ip_to_country_df.empty:
+            raise ValueError(
+                "IP Data source is empty. Please initialize instance with init_ip set to True."
+            )
+        working_df = df.copy()
+        working_ip_df = self.ip_to_country_df.copy()
+
+        # Convert scaled IP Address to IPv4 integer
+        working_df[Fraud_Data_Columns.IP_INT.value] = working_df["ip_address"].astype(
+            "int64"
+        )
+        # Sort by IPv4
+        working_df = working_df.sort_values(Fraud_Data_Columns.IP_INT.value)
+
+        # Convert upper and lower ip bounds to integer
+        working_ip_df[IP_To_Country_Columns.UPPER_BOUND.value] = working_ip_df[
+            IP_To_Country_Columns.UPPER_BOUND.value
+        ].astype("int64")
+
+        working_ip_df[IP_To_Country_Columns.LOWER_BOUND.value] = working_ip_df[
+            IP_To_Country_Columns.LOWER_BOUND.value
+        ].astype("int64")
+
+        # Sort by lower bound ip
+        working_ip_df = working_ip_df.sort_values(
+            IP_To_Country_Columns.LOWER_BOUND.value
+        )
+
+        # Merge dfs
+        merged_df = pd.merge_asof(
+            working_df,
+            working_ip_df,
+            left_on=Fraud_Data_Columns.IP_INT.value,
+            right_on=IP_To_Country_Columns.LOWER_BOUND.value,
+            direction="backward",
+        )
+
+        # Filter by Upper bound
+        merged_df[Fraud_Data_Columns.COUNTRY.value] = np.where(
+            (
+                merged_df[Fraud_Data_Columns.IP_INT.value]
+                <= merged_df[IP_To_Country_Columns.UPPER_BOUND.value]
+            )
+            & (~merged_df[IP_To_Country_Columns.UPPER_BOUND.value].isna()),
+            merged_df[Fraud_Data_Columns.COUNTRY.value],
+            "Unknown",
+        )
+
+        # Drop Bounds
+        merged_df.drop(
+            columns=[
+                IP_To_Country_Columns.LOWER_BOUND.value,
+                IP_To_Country_Columns.UPPER_BOUND.value,
+            ],
+            inplace=True,
+        )
+
+        print("Mapped IP Address to Country!")
+        return merged_df
+
     def get_cleaned_data(self):
         df = self.raw_df
         df = self._handle_duplicates(df)
         df = self._handle_dtype(df)
         df = self._sanity_check(df)
+        df = self._map_ip_address(df)
         self.cleaned_df = df
 
         print("Data preprocessing complete!")

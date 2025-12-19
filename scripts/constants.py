@@ -9,7 +9,6 @@ RAW_CREDIT_IP_TO_COUNTRY_FILE_NAME = "ip_to_country.csv"
 
 CLEAN_FRAUD_DATA_FILE_NAME = "fraud_data_clean.csv"
 CLEAN_CREDIT_CARD_DATA_FILE_NAME = "credit_card_clean.csv"
-CLEAN_CREDIT_IP_TO_COUNTRY_FILE_NAME = "ip_to_country_clean.csv"
 
 
 class Fraud_Data_Columns(Enum):
@@ -24,6 +23,10 @@ class Fraud_Data_Columns(Enum):
     AGE = "age"
     IP_ADDRESS = "ip_address"
     CLASS = "class"
+
+    # Additional Cols
+    IP_INT = "ip_int"
+    COUNTRY = "country"
 
 
 FRAUD_DATA_NUMERIC_COLS = [
@@ -42,3 +45,9 @@ FRAUD_DATA_DATE_COLS = [
     Fraud_Data_Columns.PURCHASE_TIME.value,
     Fraud_Data_Columns.SIGN_UP_TIME.value,
 ]
+
+
+class IP_To_Country_Columns(Enum):
+    LOWER_BOUND = "lower_bound_ip_address"
+    UPPER_BOUND = "upper_bound_ip_address"
+    COUNTRY = "country"
