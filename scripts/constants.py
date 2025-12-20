@@ -27,6 +27,18 @@ class Fraud_Data_Columns(Enum):
     # Additional Cols
     IP_INT = "ip_int"
     COUNTRY = "country"
+    HOUR_OF_DAY = "hour_of_day"
+    DAY_OF_WEEK = "day_of_week"
+    TIME_SINCE_SIGN_UP = "time_since_signup"
+    # TXN Frequency
+    TXN_COUNT = "txn_count"
+    TXN_LAST_HOUR = "txn_last_hour"
+    TXN_LAST_DAY = "txn_last_day"
+    TXN_LAST_WEEK = "txn_last_week"
+    # TXN Velocity
+    TIME_SINCE_LAST_TXN = "time_since_last_txn"
+    MIN_TIME_BETWEEN_TXNS = "min_time_between_txns"
+    MEDIAN_TIME_BETWEEN_TXNS = "median_time_between_txns"
 
 
 FRAUD_DATA_NUMERIC_COLS = [

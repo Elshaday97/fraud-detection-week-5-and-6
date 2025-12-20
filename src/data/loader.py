@@ -2,6 +2,7 @@ from scripts.constants import (
     CLEAN_DATA_DIR,
     RAW_DATA_DIR,
     RAW_FRAUD_DATA_FILE_NAME,
+    Fraud_Data_Columns,
 )
 from scripts.decorator import handle_errors
 from pathlib import Path
@@ -24,10 +25,16 @@ class DataLoader:
         """
         path = Path(file_path) / Path(file_name)
 
-        # if not Path(path).exists():
-        #     raise FileNotFoundError(f"{path}: File Not Found!")
+        if not Path(path).exists():
+            raise FileNotFoundError(f"{path}: File Not Found!")
 
-        df = pd.read_csv(path)
+        df = pd.read_csv(
+            path,
+            parse_dates=[
+                Fraud_Data_Columns.PURCHASE_TIME.value,
+                Fraud_Data_Columns.SIGN_UP_TIME.value,
+            ],
+        )
         print(f"Loaded {path} to dataframe!")
         return df
 

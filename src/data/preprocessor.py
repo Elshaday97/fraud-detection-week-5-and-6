@@ -12,9 +12,9 @@ import numpy as np
 
 
 class DataPreProcessor:
-    def __init__(self, df: pd.DataFrame, init_ip=False):
+    def __init__(self, df: pd.DataFrame = None, init_ip=False):
         self.raw_df = df
-        self.cleaned_df = df
+        self.cleaned_df = None
         if init_ip:
             self.ip_to_country_df = (
                 DataLoader()
@@ -95,6 +95,7 @@ class DataPreProcessor:
 
         return working_df
 
+    @handle_errors
     def _map_ip_address(self, df: pd.DataFrame):
         if self.ip_to_country_df.empty:
             raise ValueError(
@@ -166,3 +167,7 @@ class DataPreProcessor:
 
         print("Data preprocessing complete!")
         return df
+
+    def scale_features(self, df: pd.DataFrame):
+        working_df = df.copy()
+        return working_df
