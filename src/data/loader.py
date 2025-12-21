@@ -15,7 +15,10 @@ class DataLoader:
 
     @handle_errors
     def load_csv(
-        self, file_name: str = RAW_FRAUD_DATA_FILE_NAME, file_path: str = RAW_DATA_DIR
+        self,
+        file_name: str = RAW_FRAUD_DATA_FILE_NAME,
+        file_path: str = RAW_DATA_DIR,
+        should_parse_dates=False,
     ) -> pd.DataFrame | None:
         """
         Load CSV file from given path and return as DataFrame
@@ -28,13 +31,21 @@ class DataLoader:
         if not Path(path).exists():
             raise FileNotFoundError(f"{path}: File Not Found!")
 
-        df = pd.read_csv(
-            path,
-            parse_dates=[
+        parse_dates = (
+            [
                 Fraud_Data_Columns.PURCHASE_TIME.value,
                 Fraud_Data_Columns.SIGN_UP_TIME.value,
-            ],
+            ]
+            if should_parse_dates
+            else None
         )
+        df = pd.read_csv(
+            path,
+            parse_dates=parse_dates,
+        )
+        if "Unnamed: 0" in df.columns:
+            df.drop(columns=["Unnamed: 0"], inplace=True)
+
         print(f"Loaded {path} to dataframe!")
         return df
 

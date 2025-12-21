@@ -9,8 +9,10 @@ class TimeFeatureExtractor(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
 
-    def transform(self, X):
+    def transform(self, X: pd.DataFrame):
         working_df = X.copy()
+        if "Unnamed: 0" in working_df.columns:
+            working_df.drop(columns=["Unnamed: 0"], inplace=True)
 
         working_df[Fraud_Data_Columns.HOUR_OF_DAY.value] = working_df[
             Fraud_Data_Columns.PURCHASE_TIME.value
