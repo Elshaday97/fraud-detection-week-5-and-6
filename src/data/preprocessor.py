@@ -6,6 +6,7 @@ from scripts.constants import (
     FRAUD_DATA_DATE_COLS,
     RAW_CREDIT_IP_TO_COUNTRY_FILE_NAME,
     IP_To_Country_Columns,
+    Credit_Card_Data_Columns,
 )
 from .loader import DataLoader
 import numpy as np
@@ -171,3 +172,51 @@ class DataPreProcessor:
     def scale_features(self, df: pd.DataFrame):
         working_df = df.copy()
         return working_df
+
+
+class CreditCardDataProcessor:
+    def __init__(self, raw_df: pd.DataFrame):
+        self.raw_df = raw_df
+
+    @handle_errors
+    def _handle_missing(self, df: pd.DataFrame):
+        working_df = df.copy()
+        missing_count = working_df.isna().sum()
+        if missing_count.sum() == 0:
+            print("No missing values in data")
+        # Skipping missing data handling since data has no missing values
+
+        return working_df
+
+    @handle_errors
+    def _handle_duplicates(self, df: pd.DataFrame):
+        working_df = df.copy()
+        duplicated_rows = working_df.duplicated().sum()
+        if duplicated_rows == 0:
+            print("No duplicated rows found")
+        else:
+            working_df = working_df.drop_duplicates()
+            print(f"Dropped {duplicated_rows} duplicated rows.")
+        return working_df
+
+    @handle_errors
+    def _handle_dtypes(self, df: pd.DataFrame):
+        working_df = df.copy()
+        cols_list = [col.value for col in Credit_Card_Data_Columns]
+
+        for col in cols_list:
+            if col not in working_df.columns:
+                raise ValueError(f"Column {col} not found in data set")
+            col_dtype = working_df[col].dtype
+            if col_dtype != "int64" and col_dtype != "float64":
+                working_df[col] = working_df[col].astype(int)
+                print(f"Converted {col} to numeric.")
+
+        return working_df
+
+    def get_cleaned_data(self):
+        df = self.raw_df
+        df = self._handle_missing(df)
+        df = self._handle_duplicates(df)
+        df = self._handle_dtypes(df)
+        return df
