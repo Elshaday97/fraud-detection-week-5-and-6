@@ -67,7 +67,6 @@ class IP_To_Country_Columns(Enum):
 
 class Credit_Card_Data_Columns(Enum):
     AMOUNT = "Amount"
-    AMOUNT_LOG = "Amount_log"
     CLASS = "Class"
     TIME = "Time"
     V10 = "V10"

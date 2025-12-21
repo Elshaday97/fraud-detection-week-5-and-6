@@ -7,14 +7,24 @@ from imblearn.over_sampling import SMOTE
 
 
 class DataTransformer:
-    def __init__(self):
+
+    def __init__(
+        self,
+        custom_numeric_cols_checker: list = None,
+        custom_categoric_cols_checker: list = None,
+    ):
         self.numeric_cols = []
         self.categorical_cols = []
         self._is_fitted = False
         self.preprocessor = None
+        self.custom_numeric_cols_checker = custom_numeric_cols_checker
+        self.custom_categoric_cols_checker = custom_categoric_cols_checker
 
     @handle_errors
-    def fit(self, X: pd.DataFrame):
+    def fit(
+        self,
+        X: pd.DataFrame,
+    ):
         if not isinstance(X, pd.DataFrame):
             raise ValueError("Please use a valid dataframe")
 
@@ -24,11 +34,18 @@ class DataTransformer:
         self.numeric_cols = []
         self.categorical_cols = []
 
+        numeric_cols_checker = (
+            self.custom_numeric_cols_checker or FRAUD_DATA_NUMERIC_COLS
+        )
+        categoric_cols_checker = (
+            self.custom_categoric_cols_checker or FRAUD_DATA_CATEGORICAL_COLS
+        )
+
         for col in X.columns:
-            if col in FRAUD_DATA_NUMERIC_COLS and pd.api.types.is_numeric_dtype(X[col]):
+            if col in numeric_cols_checker and pd.api.types.is_numeric_dtype(X[col]):
                 self.numeric_cols.append(col)
             elif (
-                col in FRAUD_DATA_CATEGORICAL_COLS
+                (len(categoric_cols_checker) > 0 and col in categoric_cols_checker)
                 and pd.api.types.is_object_dtype(X[col])
                 or pd.api.types.is_categorical_dtype(X[col])
             ):
