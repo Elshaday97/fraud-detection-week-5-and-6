@@ -13,6 +13,11 @@ import numpy as np
 
 
 class DataPreProcessor:
+    """
+    DataPreProcessor class for preprocessing fraud detection data
+    and mapping IP addresses to countries.
+    """
+
     def __init__(self, df: pd.DataFrame = None, init_ip=False):
         self.raw_df = df
         self.cleaned_df = None
@@ -28,6 +33,11 @@ class DataPreProcessor:
 
     @handle_errors
     def _handle_duplicates(self, df: pd.DataFrame):
+        """
+        Handle duplicated rows in the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame with duplicates removed
+        """
         working_df = df.copy()
         duplicted_rows = working_df.duplicated().sum()
         if duplicted_rows == 0:
@@ -39,6 +49,10 @@ class DataPreProcessor:
 
     @handle_errors
     def _handle_dtype(self, df: pd.DataFrame):
+        """
+        Handle data types of specific columns in the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame with corrected data types"""
         working_df = df.copy()
 
         # Numeric Cols
@@ -61,6 +75,10 @@ class DataPreProcessor:
 
     @handle_errors
     def _sanity_check(self, df: pd.DataFrame):
+        """
+        Perform sanity checks on the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame after sanity checks"""
         working_df = df.copy()
 
         # Check Generic Null Values
@@ -98,6 +116,11 @@ class DataPreProcessor:
 
     @handle_errors
     def _map_ip_address(self, df: pd.DataFrame):
+        """
+        Map IP addresses to countries using the IP to Country DataFrame
+        :param df: Input DataFrame with IP addresses
+        :return: DataFrame with mapped countries
+        """
         if self.ip_to_country_df.empty:
             raise ValueError(
                 "IP Data source is empty. Please initialize instance with init_ip set to True."
@@ -159,6 +182,10 @@ class DataPreProcessor:
         return merged_df
 
     def get_cleaned_data(self):
+        """
+        Perform full data preprocessing pipeline
+        :return: Cleaned DataFrame
+        """
         df = self.raw_df
         df = self._handle_duplicates(df)
         df = self._handle_dtype(df)
@@ -169,17 +196,19 @@ class DataPreProcessor:
         print("Data preprocessing complete!")
         return df
 
-    def scale_features(self, df: pd.DataFrame):
-        working_df = df.copy()
-        return working_df
-
 
 class CreditCardDataProcessor:
+    """Process credit card data for fraud detection."""
+
     def __init__(self, raw_df: pd.DataFrame):
         self.raw_df = raw_df
 
     @handle_errors
     def _handle_missing(self, df: pd.DataFrame):
+        """
+        Handle missing values in the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame with missing values handled"""
         working_df = df.copy()
         missing_count = working_df.isna().sum()
         if missing_count.sum() == 0:
@@ -190,7 +219,11 @@ class CreditCardDataProcessor:
 
     @handle_errors
     def _handle_duplicates(self, df: pd.DataFrame):
-        working_df = df.copy()
+        """
+        Handle duplicated rows in the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame with duplicates removed
+        """
         duplicated_rows = working_df.duplicated().sum()
         if duplicated_rows == 0:
             print("No duplicated rows found")
@@ -201,6 +234,10 @@ class CreditCardDataProcessor:
 
     @handle_errors
     def _handle_dtypes(self, df: pd.DataFrame):
+        """
+        Handle data types of specific columns in the DataFrame
+        :param df: Input DataFrame
+        :return: DataFrame with corrected data types"""
         working_df = df.copy()
         cols_list = [col.value for col in Credit_Card_Data_Columns]
 
@@ -215,6 +252,9 @@ class CreditCardDataProcessor:
         return working_df
 
     def get_cleaned_data(self):
+        """
+        Perform full data preprocessing pipeline
+        :return: Cleaned DataFrame"""
         df = self.raw_df
         df = self._handle_missing(df)
         df = self._handle_duplicates(df)
