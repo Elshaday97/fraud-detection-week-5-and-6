@@ -6,9 +6,18 @@ from sklearn.pipeline import Pipeline
 
 
 class TimeFeatureExtractor(BaseEstimator, TransformerMixin):
+    """
+    Extract time-based features from purchase and sign-up timestamps.
+    """
+
     def fit(self, X, y=None):
         return self
 
+    """
+    Extract time-based features from purchase and sign-up timestamps.
+    """
+
+    @handle_errors
     def transform(self, X: pd.DataFrame):
         working_df = X.copy()
         if "Unnamed: 0" in working_df.columns:
@@ -32,8 +41,11 @@ class TimeFeatureExtractor(BaseEstimator, TransformerMixin):
 
 
 class FeatEngineer:
+    """Feature engineering pipeline for fraud detection dataset."""
+
     def __init__(self, df: pd.DataFrame):
         self.df = df
+        # Define the pipeline steps
         self.pipeline = Pipeline(
             [
                 ("time_feature_extractor", TimeFeatureExtractor()),
@@ -42,6 +54,10 @@ class FeatEngineer:
 
     @handle_errors
     def transform_all(self):
+        """
+        Apply the feature engineering pipeline to the DataFrame
+        :return: Transformed DataFrame
+        """
         if self.df.empty:
             raise ValueError("Please use a non empty data set")
         self.df.sort_values(

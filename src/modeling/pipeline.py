@@ -7,6 +7,7 @@ from imblearn.over_sampling import SMOTE
 
 
 class DataTransformer:
+    """Data transformation class for preprocessing features."""
 
     def __init__(
         self,
@@ -25,6 +26,10 @@ class DataTransformer:
         self,
         X: pd.DataFrame,
     ):
+        """
+        Fit the transformer to the DataFrame
+        :param X: Input DataFrame
+        :return: Fitted transformer"""
         if not isinstance(X, pd.DataFrame):
             raise ValueError("Please use a valid dataframe")
 
@@ -40,7 +45,7 @@ class DataTransformer:
         categoric_cols_checker = (
             self.custom_categoric_cols_checker or FRAUD_DATA_CATEGORICAL_COLS
         )
-
+        # Identify numeric and categorical columns
         for col in X.columns:
             if col in numeric_cols_checker and pd.api.types.is_numeric_dtype(X[col]):
                 self.numeric_cols.append(col)
@@ -51,6 +56,7 @@ class DataTransformer:
             ):
                 self.categorical_cols.append(col)
 
+        # Create the ColumnTransformer
         self.preprocessor = ColumnTransformer(
             transformers=[
                 ("num", StandardScaler(), self.numeric_cols),
@@ -61,7 +67,10 @@ class DataTransformer:
                 ),
             ]
         )
+
+        # Fit the preprocessor
         self.preprocessor.fit(X)
+        # Mark as fitted
         self._is_fitted = True
 
         return self
@@ -79,6 +88,7 @@ class DataTransformer:
 
 
 class ImbalanceHandler:
+    """Class to handle imbalanced datasets using SMOTE."""
 
     def __init__(self):
         self.sm = SMOTE(random_state=42, sampling_strategy=0.35)

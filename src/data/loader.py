@@ -10,6 +10,11 @@ import pandas as pd
 
 
 class DataLoader:
+    """
+    DataLoader class for loading and saving CSV files
+    from specified directories.
+    """
+
     def __init__(self):
         pass
 
