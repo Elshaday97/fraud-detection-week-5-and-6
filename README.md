@@ -18,17 +18,33 @@
   - fraud_modeling.ipynb
 - src/
   - data/
-    - load.py
+    - loader.py
     - preprocessor.py
   - features/
     - features.py
-  - models/
   - modeling/
     - pipeline.py
+  - training/
+    - train_model.py
 - scripts/
   - constants.py
   - decorator.py
 - models/
+  - fraud_detection/
+    - logistic_regression.pkl
+    - random_forest.pkl
+    - xg_boost.pkl
+  - credit_card_fraud_detection/
+    - logistic_regression.pkl
+    - random_forest.pkl
+    - xg_boost.pkl
+- reports/
+  - fraud_detection/
+    - metrics/
+    - figures/
+  - credit_card_fraud_detection/
+    - metrics/
+    - figures/
 - tests/
 - requirements.txt
 - Dockerfile
@@ -45,3 +61,11 @@ Quick start
    - Put raw datasets into data/raw/ following naming conventions
 4. Run notebooks
    - Run notebooks in order to process data and train models.
+
+### How to Use
+
+1. Load data using src/data/loader.py
+2. Preprocess data using src/data/preprocessor.py
+3. Engineer features using src/features/features.py
+4. Train models using src/training/train_model.py
+5. Evaluate models and generate reports in reports/ directory.
