@@ -88,3 +88,10 @@ class Credit_Card_Data_Columns(Enum):
     V26 = "V26"
     V27 = "V27"
     V28 = "V28"
+
+
+class Model_Names(Enum):
+    LOGISTIC_REGRESSION = "Logistic Regression"
+    RANDOM_FOREST = "Random Forest"
+    XGBoost = "XGBoost"
+    LIGHT_GBM = "LightGBM"
