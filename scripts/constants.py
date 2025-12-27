@@ -10,6 +10,10 @@ RAW_CREDIT_IP_TO_COUNTRY_FILE_NAME = "ip_to_country.csv"
 CLEAN_FRAUD_DATA_FILE_NAME = "fraud_data_clean.csv"
 CLEAN_CREDIT_CARD_DATA_FILE_NAME = "credit_card_clean.csv"
 
+LR_MODEL_FILEPATH = "logistic_regression.pkl"
+RF_MODEL_FILEPATH = "random_forest.pkl"
+XG_BOOST_FILEPATH = "xg_boost.pkl"
+
 
 class Fraud_Data_Columns(Enum):
     USER_ID = "user_id"

@@ -19,6 +19,7 @@ data/
 *.tsv
 *.xlsx
 *.json
+models/
 
 # IDEs / editors
 .vscode/
